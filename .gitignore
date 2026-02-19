@@ -1,0 +1,15 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+/composeApp/build
+/iosApp/build
+*.xcworkspace
+*.xcuserdata
+/iosApp/Pods
+.kotlin/
