@@ -4,9 +4,7 @@ A Compose Multiplatform port of the WWDC-style touch distortion effect. Drag acr
 
 ## Demo
 
-https://github.com/user-attachments/assets/demo.mp4
-
-<video src="assets/demo.mp4" width="300" autoplay loop muted></video>
+https://github.com/aldefy/HelloDistort/releases/download/v1.0/demo.mp4
 
 ## Inspiration
 
