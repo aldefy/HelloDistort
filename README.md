@@ -4,11 +4,21 @@ A Compose Multiplatform port of the WWDC-style touch distortion effect. Drag acr
 
 ## Demo
 
-> Coming soon — record with ComposeProof or adb screenrecord
+https://github.com/user-attachments/assets/demo.mp4
+
+<video src="assets/demo.mp4" width="300" autoplay loop muted></video>
 
 ## Inspiration
 
-This is an Android/AGSL port of the viral SwiftUI Metal shader by [Daniel Kuntz (@dankuntz)](https://twitter.com/dankuntz):
+Ported from the viral SwiftUI Metal shader by [Daniel Kuntz (@dankuntz)](https://x.com/dankuntz/status/1813283813881225625):
+
+<blockquote>
+<a href="https://x.com/dankuntz/status/1813283813881225625">
+<img src="https://img.shields.io/badge/View_Original-@dankuntz_on_𝕏-000000?style=for-the-badge&logo=x" alt="View original tweet" />
+</a>
+</blockquote>
+
+The original uses SwiftUI's `DragGesture` velocity + a Metal `[[stitchable]]` layer effect to create a touch-reactive chromatic smear:
 
 ```metal
 [[stitchable]]
@@ -23,7 +33,7 @@ half4 w(float2 p, SwiftUI::Layer a, float2 l, float2 v) {
 }
 ```
 
-The original uses SwiftUI's `DragGesture` velocity + a Metal `[[stitchable]]` layer effect to create a touch-reactive chromatic smear. This project ports that exact shader to AGSL for Compose Multiplatform.
+This project ports that exact shader to AGSL for Compose Multiplatform.
 
 ## Architecture
 
@@ -53,4 +63,4 @@ New to AGSL? Read **[What is AGSL?](what-is-agsl.md)** — a full breakdown of t
 
 ## Credits
 
-Original Metal shader by [Daniel Kuntz (@dankuntz)](https://twitter.com/dankuntz). AGSL port for Compose Multiplatform.
+Original Metal shader by [Daniel Kuntz (@dankuntz)](https://x.com/dankuntz/status/1813283813881225625). AGSL port for Compose Multiplatform.
