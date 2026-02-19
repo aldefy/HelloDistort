@@ -4,7 +4,9 @@ A Compose Multiplatform port of the WWDC-style touch distortion effect. Drag acr
 
 ## Demo
 
-https://github.com/aldefy/HelloDistort/releases/download/v1.0/demo.mp4
+<p align="center">
+  <img src="assets/demo.gif" width="300" alt="HelloDistort demo — touch-reactive chromatic aberration" />
+</p>
 
 ## Inspiration
 
