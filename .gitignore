@@ -13,3 +13,7 @@
 *.xcuserdata
 /iosApp/Pods
 .kotlin/
+.claude/
+.claude.*
+CLAUDE.md
+.mcp.json
