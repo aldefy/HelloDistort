@@ -1,9 +1,5 @@
 package com.example.hellodistort
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.withInfiniteAnimationFrameMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -12,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -32,48 +27,15 @@ import androidx.compose.ui.unit.sp
 fun App() {
     val distortionEffect = remember { createDistortionEffect() }
     var touchPoint by remember { mutableStateOf(Offset.Zero) }
-    var isTouching by remember { mutableStateOf(false) }
-    val intensity = remember { Animatable(0f) }
-    var time by remember { mutableFloatStateOf(0f) }
+    var smoothedVelocity by remember { mutableStateOf(Offset.Zero) }
     var width by remember { mutableFloatStateOf(1f) }
     var height by remember { mutableFloatStateOf(1f) }
-
-    // Animate time for ripple effect
-    LaunchedEffect(Unit) {
-        val startTime = withInfiniteAnimationFrameMillis { it }
-        while (true) {
-            withInfiniteAnimationFrameMillis { frameTime ->
-                time = (frameTime - startTime) / 1000f
-            }
-        }
-    }
-
-    // Animate intensity on touch/release
-    LaunchedEffect(isTouching) {
-        if (isTouching) {
-            intensity.animateTo(
-                1f,
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessMedium,
-                )
-            )
-        } else {
-            intensity.animateTo(
-                0f,
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioNoBouncy,
-                    stiffness = Spring.StiffnessLow,
-                )
-            )
-        }
-    }
 
     val shaderModifier = distortionEffect.createModifier(
         touchX = touchPoint.x,
         touchY = touchPoint.y,
-        intensity = intensity.value,
-        time = time,
+        velocityX = smoothedVelocity.x,
+        velocityY = smoothedVelocity.y,
         width = width,
         height = height,
     )
@@ -90,35 +52,56 @@ fun App() {
                 awaitEachGesture {
                     val down = awaitFirstDown()
                     touchPoint = down.position
-                    isTouching = true
+                    smoothedVelocity = Offset.Zero
+                    var prevPosition = down.position
+                    var prevTime = down.uptimeMillis
                     down.consume()
 
                     do {
                         val event = awaitPointerEvent()
-                        val pos = event.changes.firstOrNull()?.position
-                        if (pos != null) {
-                            touchPoint = pos
-                        }
+                        val change = event.changes.firstOrNull() ?: continue
+                        val currentPos = change.position
+                        val currentTime = change.uptimeMillis
+                        val dt = (currentTime - prevTime).coerceAtLeast(1)
+
+                        // SwiftUI's `predictedEndLocation - location` gives a momentum-like
+                        // delta (~200-500px for moderate drags). It's roughly velocity * 0.3s.
+                        // We compute px/ms then scale by ~250ms to approximate that range.
+                        val rawVelocity = Offset(
+                            (currentPos.x - prevPosition.x) / dt * 250f,
+                            (currentPos.y - prevPosition.y) / dt * 250f,
+                        )
+
+                        // Exponential smoothing (matching SwiftUI DragGesture behavior)
+                        val smoothing = 0.4f
+                        smoothedVelocity = Offset(
+                            smoothedVelocity.x * (1f - smoothing) + rawVelocity.x * smoothing,
+                            smoothedVelocity.y * (1f - smoothing) + rawVelocity.y * smoothing,
+                        )
+
+                        touchPoint = currentPos
+                        prevPosition = currentPos
+                        prevTime = currentTime
                         event.changes.forEach { it.consume() }
                     } while (event.type != PointerEventType.Release &&
                         event.changes.any { it.pressed })
 
-                    isTouching = false
+                    // On release, zero out velocity so effect disappears
+                    smoothedVelocity = Offset.Zero
                 }
             }
     ) {
-        // The text content that gets distorted
         Text(
             text = buildString {
-                repeat(80) { append("Hello, world! ") }
+                repeat(120) { append("Compose! ") }
             },
             color = Color.White,
-            fontSize = 28.sp,
+            fontSize = 40.sp,
             fontWeight = FontWeight.Black,
-            lineHeight = 34.sp,
+            lineHeight = 46.sp,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 12.dp, vertical = 48.dp)
+                .padding(vertical = 48.dp)
                 .then(shaderModifier),
         )
     }

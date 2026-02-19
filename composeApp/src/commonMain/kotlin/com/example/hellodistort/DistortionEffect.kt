@@ -6,8 +6,8 @@ interface DistortionEffect {
     fun createModifier(
         touchX: Float,
         touchY: Float,
-        intensity: Float,
-        time: Float,
+        velocityX: Float,
+        velocityY: Float,
         width: Float,
         height: Float,
     ): Modifier
