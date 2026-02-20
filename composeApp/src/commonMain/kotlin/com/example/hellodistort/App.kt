@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -98,6 +99,7 @@ fun App() {
             color = Color.White,
             fontSize = 40.sp,
             fontWeight = FontWeight.Black,
+            fontFamily = FontFamily.Monospace,
             lineHeight = 46.sp,
             modifier = Modifier
                 .fillMaxSize()
